@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +30,33 @@ public class TodoService {
     //할일 전체 조회
     public List<Todo> getTodos() {
         return todoRepository.findAll(Sort.by("createAt").descending());
+    }
+
+    //할일 수정
+    public Todo updateTodo(Long todoId, TodoRequestDto dto) {
+        Todo todo = checkPassword(todoId, dto.getPassword());
+
+        todo.setTitle(dto.getTitle());
+        todo.setContent(dto.getContent());
+        todo.setUserName(dto.getUserName());
+
+        return todoRepository.save(todo);
+    }
+
+    //할일 삭제
+    public void deleteTodo(Long todoId, String password) {
+        Todo todo = checkPassword(todoId, password);
+        todoRepository.delete(todo);
+    }
+
+    private Todo checkPassword(Long todoId, String password) {
+        Todo todo = getTodo(todoId);
+
+        //비밀번호 체크
+        if (todo.getPassword() != null && !Objects.equals(todo.getPassword(), password)) {
+            throw new IllegalArgumentException();
+        }
+        return todo;
     }
 
 }

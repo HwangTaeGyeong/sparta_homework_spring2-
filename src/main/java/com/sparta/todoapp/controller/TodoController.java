@@ -38,4 +38,17 @@ public class TodoController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok().body(responseDtos);
     }
+
+    @PutMapping("/{todoId}")
+    public ResponseEntity<TodoResponseDto> putTodo(@PathVariable Long todoId, @RequestBody TodoRequestDto dto) {
+        Todo todo = todoService.updateTodo(todoId, dto);
+        TodoResponseDto responseDto = new TodoResponseDto(todo);
+        return ResponseEntity.ok().body(responseDto);
+    }
+
+    @DeleteMapping("/{todoId}")
+    public ResponseEntity<Void> deleteTodo(@PathVariable Long todoId, @RequestBody TodoRequestDto dto) {
+        todoService.deleteTodo(todoId, dto.getPassword());
+        return ResponseEntity.ok().build();
+    }
 }
